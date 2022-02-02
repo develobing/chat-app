@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import loginImage from '../../assets/images/login.svg';
 import AuthService from '../../services/authService';
+import { login } from '../../store/actions/auth';
 import './Auth.scss';
 
-const Login = () => {
+const Login = ({ history }) => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const submitForm = (e) => {
     e.preventDefault();
 
-    AuthService.login({ email, password }).then((data) =>
-      console.log('data', data)
-    );
-    console.log(email, password);
+    dispatch(login({ email, password }, history));
   };
 
   return (
@@ -34,8 +34,8 @@ const Login = () => {
                   type="text"
                   value={email}
                   placeholder="Email"
-                  required
                   onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
               </div>
 
@@ -44,8 +44,8 @@ const Login = () => {
                   type="password"
                   value={password}
                   placeholder="Password"
-                  required
                   onChange={(e) => setPassword(e.target.value)}
+                  required
                 />
               </div>
 

@@ -1,9 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import registerImage from '../../assets/images/register.svg';
+import { register } from '../../store/actions/auth';
 import './Auth.scss';
 
-const Register = () => {
+const Register = ({ history }) => {
+  const dispatch = useDispatch();
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [gender, setGender] = useState('male');
+  const [password, setPassword] = useState('');
+
+  const submitForm = (e) => {
+    e.preventDefault();
+
+    dispatch(
+      register({ firstName, lastName, gender, email, password }, history)
+    );
+  };
+
   return (
     <div id="auth-container">
       <div id="auth-card">
@@ -15,28 +33,57 @@ const Register = () => {
           <div id="form-section">
             <h2>Create an account</h2>
 
-            <form>
+            <form onSubmit={submitForm}>
               <div className="input-field mb-1">
-                <input placeholder="First name" />
+                <input
+                  type="text"
+                  value={firstName}
+                  placeholder="First name"
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                />
               </div>
 
               <div className="input-field mb-1">
-                <input placeholder="Last name" />
+                <input
+                  type="text"
+                  value={lastName}
+                  placeholder="Last name"
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                />
               </div>
 
               <div className="input-field mb-1">
-                <input placeholder="Email" />
+                <input
+                  type="email"
+                  value={email}
+                  placeholder="Email"
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
               </div>
 
               <div className="input-field mb-1">
-                <select>
+                <select
+                  value={gender}
+                  placeholder="gender"
+                  onChange={(e) => setGender(e.target.value)}
+                  required
+                >
                   <option value="male">Male</option>
                   <option value="female">Female</option>
                 </select>
               </div>
 
               <div className="input-field mb-1">
-                <input placeholder="Password" />
+                <input
+                  type="password"
+                  value={password}
+                  placeholder="Password"
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
               </div>
 
               <button>REGISTER</button>

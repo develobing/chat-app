@@ -6,5 +6,6 @@ router.get('/home', (req, res) => {
 });
 
 router.use('/', require('./auth.js'));
+router.use('/users', require('./user.js'));
 
 module.exports = router;

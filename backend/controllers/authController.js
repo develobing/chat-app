@@ -21,6 +21,7 @@ exports.login = async (req, res) => {
 
     // Generate auth token
     const userWithToken = generateToken(user.get({ raw: true }));
+    userWithToken.user.avatar = user.avatar;
     return res.json(userWithToken);
   } catch (err) {
     console.log('login() - err', err);
@@ -35,6 +36,7 @@ exports.register = async (req, res) => {
 
     // Generate auth token
     const userWithToken = generateToken(user.get({ raw: true }));
+    userWithToken.user.avatar = user.avatar;
     return res.json(userWithToken);
   } catch (err) {
     console.log('register() - err', err);
@@ -50,7 +52,7 @@ const generateToken = (user) => {
   });
 
   return {
+    user,
     token,
-    ...user,
   };
 };

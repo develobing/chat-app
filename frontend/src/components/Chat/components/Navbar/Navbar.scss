@@ -1,0 +1,81 @@
+@import '../../../../assets/scss/variables';
+
+#navbar {
+  display: flex;
+  justify-content: space-between;
+  height: 60px;
+  background-color: $bg-main;
+  padding: 0 10px;
+
+  h2 {
+    display: flex;
+    align-self: center;
+    color: white;
+  }
+
+  .fa-icon {
+    color: white;
+    margin-left: 5px;
+  }
+
+  #profile-menu {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 100%;
+    position: relative;
+    cursor: pointer;
+
+    p {
+      display: flex;
+      align-self: center;
+      color: white;
+    }
+
+    img {
+      display: flex;
+      color: white;
+      align-self: center;
+      margin-right: 5px;
+      border-radius: 20px;
+    }
+
+    #profile-options {
+      position: absolute;
+      top: 50px;
+      border-radius: 5px;
+      padding: 0 5px;
+      right: 5px;
+      border: 1px solid #d9d9d9;
+      background-color: white;
+      z-index: 9999;
+
+      p {
+        margin: 10px 5px;
+        color: black;
+      }
+    }
+
+    form {
+      .input-field {
+        input,
+        select {
+          height: 40px;
+          width: 100%;
+          box-sizing: border-box;
+        }
+      }
+    }
+
+    .btn-success {
+      background-color: $success;
+      border: none;
+      padding: 5px;
+      width: 70px;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+  }
+}
