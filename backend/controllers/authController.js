@@ -29,12 +29,6 @@ exports.login = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
-  // const errors = validationResult(req);
-
-  // if (!errors.isEmpty()) {
-  //   return res.status(400).json({ errors: errors.array() });
-  // }
-
   try {
     // Create a new user
     const user = await User.create(req.body);
@@ -50,7 +44,7 @@ exports.register = async (req, res) => {
 
 const generateToken = (user) => {
   delete user.password;
-  console.log('user', user);
+
   const token = jwt.sign(user, config.appKey, {
     expiresIn: 86400,
   });
