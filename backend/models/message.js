@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         get() {
           const type = this.getDataValue('type');
-          const id = this.getDataValue('id');
+          const id = this.getDataValue('chatId');
           const content = this.getDataValue('message');
 
           return type === 'text'
