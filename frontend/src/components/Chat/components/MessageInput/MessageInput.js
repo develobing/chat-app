@@ -1,20 +1,39 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './MessageInput.scss';
-import { useSelector } from 'react-redux';
 import ChatService from '../../../../services/chatService';
 import { Picker } from 'emoji-mart';
+import { incrementScroll } from '../../../../store/actions/chat';
 import 'emoji-mart/css/emoji-mart.css';
 
 const MessageInput = ({ chat }) => {
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const socket = useSelector((state) => state.chat.socket);
+  const newMessage = useSelector((state) => state.chat.newMessage);
   const fileUpload = useRef();
   const msgInput = useRef();
 
   const [message, setMessage] = useState('');
   const [image, setImage] = useState('');
   const [showEmoji, setShowEmoji] = useState(false);
+  const [showNewMessageNotification, setShowNewMessageNotification] =
+    useState(false);
+
+  useEffect(() => {
+    if (!newMessage.seen && newMessage.chatId === chat.id) {
+      const msgBox = document.getElementById('msg-box');
+      const { scrollTop, scrollHeight } = msgBox;
+      if (scrollTop > scrollHeight * 0.3) {
+        dispatch(incrementScroll());
+      } else {
+        setShowNewMessageNotification(true);
+      }
+    } else {
+      setShowNewMessageNotification(false);
+    }
+  }, [newMessage, dispatch, chat.id]);
 
   const handleMessage = (e) => {
     const value = e.target.value;
@@ -92,10 +111,23 @@ const MessageInput = ({ chat }) => {
     msgInput.current.selectionEnd = endPosition + emojiLength;
   };
 
+  const showNewMessage = () => {
+    dispatch(incrementScroll());
+    setShowNewMessageNotification(false);
+  };
+
   return (
     <div id="input-container">
       <div id="image-upload-container">
-        <div>{/*  */}</div>
+        <div>
+          {showNewMessageNotification && (
+            <div id="message-notification" onClick={showNewMessage}>
+              <FontAwesomeIcon icon="bell" className="fa-icon" />
+
+              <p className="m-0">New message</p>
+            </div>
+          )}
+        </div>
 
         <div id="image-upload">
           {image && image.name ? (

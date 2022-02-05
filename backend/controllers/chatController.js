@@ -140,6 +140,7 @@ exports.messages = async (req, res) => {
       include: [{ model: User }],
       limit,
       offset,
+      order: [['id', 'DESC']],
     });
 
     const totalPages = Math.ceil(messages.count / limit);
