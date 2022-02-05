@@ -1,0 +1,19 @@
+#msg-box {
+  scroll-behavior: auto;
+  overflow-y: scroll;
+  flex-grow: 2;
+  height: 0;
+  margin-bottom: 10px;
+
+  .other-person {
+    max-width: fit-content;
+  }
+
+  .loader {
+    text-align: center;
+  }
+
+  .mt-5p {
+    margin-top: 5px;
+  }
+}

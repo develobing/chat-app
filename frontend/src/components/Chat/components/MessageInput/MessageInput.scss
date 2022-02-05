@@ -1,0 +1,89 @@
+@import '../../../../assets/scss/variables';
+
+#input-container {
+  position: relative;
+
+  #image-upload-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 2.5px 2.5px 2.5px 0;
+    position: relative;
+
+    #image-upload {
+      display: flex;
+    }
+
+    #message-notification {
+      display: flex;
+      cursor: pointer;
+      border: 1px solid $bg-main;
+      border-radius: 15px;
+      padding: 5px;
+
+      .fa-icon {
+        color: $bg-main;
+        margin-right: 5px;
+      }
+    }
+
+    .fa-icon {
+      position: relative;
+      right: 0;
+      top: 0;
+    }
+
+    #image-details {
+      padding: 2px;
+      border: 1px solid black;
+      margin-right: 5px;
+      display: flex;
+      align-items: center;
+
+      .fa-icon {
+        margin: 0 4px;
+      }
+    }
+  }
+
+  #message-input {
+    position: relative;
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  }
+
+  .fa-icon {
+    font-size: 20px;
+    color: $bg-main;
+    position: absolute;
+    right: 5px;
+    top: 8px;
+    cursor: pointer;
+  }
+
+  .mb-5p {
+    margin-bottom: 5px;
+  }
+
+  .mb-10p {
+    margin-bottom: 10px;
+  }
+
+  input {
+    border: none;
+    background-color: #f5f6f8;
+    padding: 10px;
+  }
+
+  #chat-image {
+    position: absolute;
+    visibility: hidden;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+}

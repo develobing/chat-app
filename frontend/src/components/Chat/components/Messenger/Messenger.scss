@@ -1,0 +1,102 @@
+@import '../../../../assets/scss/variables';
+
+#messenger {
+  justify-content: space-between;
+  padding: 15px;
+  flex-grow: 2;
+  background-color: white;
+
+  #messenger-wrap {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+
+    #settings {
+      border-radius: 5px;
+      position: absolute;
+      right: 12px;
+      top: 8px;
+      padding: 5px;
+      border: 1px solid #d9d9d9;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+
+      & > div {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 5px;
+        cursor: pointer;
+
+        .fa-icon {
+          position: relative;
+          font-size: 20px;
+          color: $bg-main;
+          margin-right: 5px;
+          min-width: 20px;
+        }
+      }
+
+      p {
+        margin: 5px 0;
+        color: #000;
+      }
+    }
+
+    & > .fa-icon {
+      font-size: 20px;
+      color: $bg-main;
+      right: 0;
+      position: absolute;
+      top: 0;
+      cursor: pointer;
+    }
+  }
+
+  & > div {
+    flex-grow: 1;
+  }
+
+  input {
+    border: none;
+    background-color: #f5f6f8;
+    padding: 10px;
+  }
+
+  hr {
+    border-top: 1px solid #cfcfcf;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  #delete-chat {
+    background-color: $success;
+    border: none;
+    padding: 5px;
+    width: 70px;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  #suggestions {
+    .suggestion {
+      margin: 10px 0;
+      padding: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      button {
+        background-color: $success;
+        border-radius: 10px;
+        border: none;
+        height: 25px;
+        color: white;
+        cursor: pointer;
+      }
+    }
+  }
+}

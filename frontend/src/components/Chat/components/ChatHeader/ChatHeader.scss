@@ -1,0 +1,24 @@
+@import '../../../../assets/scss/variables';
+
+#chatter {
+  overflow-y: auto;
+  display: flex;
+  text-align: left;
+  margin-top: 10px;
+
+  h3 {
+    margin: 0 10px 0 0;
+  }
+
+  .chatter-info {
+    display: flex;
+    margin-right: 10px;
+    min-width: 80px;
+    padding: 10px;
+  }
+
+  .chatter-status {
+    display: flex;
+    align-items: center;
+  }
+}

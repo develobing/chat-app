@@ -1,0 +1,47 @@
+@import '../../../../assets/scss/variables';
+
+.creator {
+  justify-content: flex-end;
+}
+
+.mb-5 {
+  margin-bottom: 5px;
+}
+
+.mb-10 {
+  margin-bottom: 10px;
+}
+
+.message {
+  display: flex;
+  padding-right: 5px;
+  text-align: left;
+
+  p {
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
+  & > div {
+    border-radius: 20px;
+  }
+
+  .owner {
+    background-color: $bg-main;
+    color: white;
+    padding: 10px;
+  }
+
+  .other-person {
+    background-color: #f5f6f8;
+    padding: 10px;
+  }
+
+  .dots {
+    margin: -5px 0 3px 0;
+  }
+
+  img {
+    max-width: 200px;
+  }
+}
