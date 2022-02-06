@@ -96,30 +96,56 @@ exports.create = async (req, res) => {
 
     await t.commit();
 
-    const newChat = await Chat.findOne({
+    // const newChat = await Chat.findOne({
+    //   where: {
+    //     id: chat.id,
+    //   },
+
+    //   include: [
+    //     {
+    //       model: User,
+    //       where: {
+    //         [Op.not]: {
+    //           id: req.user.id,
+    //         },
+    //       },
+    //     },
+
+    //     {
+    //       model: Message,
+    //       // limit: 20,
+    //       // order: [['id', 'DESC']],
+    //     },
+    //   ],
+    // });
+
+    const creator = await User.findOne({
       where: {
-        id: chat.id,
+        id: req.user.id,
       },
-
-      include: [
-        {
-          model: User,
-          where: {
-            [Op.not]: {
-              id: req.user.id,
-            },
-          },
-        },
-
-        {
-          model: Message,
-          // limit: 20,
-          // order: [['id', 'DESC']],
-        },
-      ],
     });
 
-    return res.json(newChat);
+    const partner = await User.findOne({
+      where: {
+        id: partnerId,
+      },
+    });
+
+    const forCreator = {
+      id: chat.id,
+      type: 'dual',
+      Users: [partner],
+      Messages: [],
+    };
+
+    const forReceiver = {
+      id: chat.id,
+      type: 'dual',
+      Users: [creator],
+      Messages: [],
+    };
+
+    return res.json([forCreator, forReceiver]);
   } catch (err) {
     console.log('err', err);
     await t.rollback();
@@ -172,20 +198,135 @@ exports.imageUpload = async (req, res) => {
     .json({ status: 'Error', error: 'Something went wrong' });
 };
 
-exports.deleteChat = async (req, res) => {
+exports.addUserToGroup = async (req, res) => {
   try {
-    await Chat.destroy({
+    const { chatId, userId } = req.body;
+    const chat = await Chat.findOne({
       where: {
-        id: req.params.id,
+        id: chatId,
+      },
+      include: [
+        {
+          model: User,
+        },
+        {
+          model: Message,
+          include: [
+            {
+              model: User,
+            },
+          ],
+          limit: 20,
+          order: [['id', 'DESC']],
+        },
+      ],
+    });
+
+    chat.Messages.reverse();
+
+    // check if the user already in the group
+    let isAlreadyJoined = false;
+    chat.Users.forEach((user) => {
+      isAlreadyJoined = user.id === userId;
+    });
+    if (isAlreadyJoined)
+      return res.status(403).json({
+        message: 'User already in the group',
+      });
+
+    await ChatUser.create({ chatId, userId });
+    const newChatter = await User.findOne({
+      where: {
+        id: userId,
       },
     });
 
+    // Change the chat type to group
+    if (chat.type === 'dual') {
+      chat.type = 'group';
+      chat.save();
+    }
+
+    // return the chat with the new user
+    return res.json({ chat, newChatter });
+  } catch (err) {
+    console.log('addUserToGroup() - err', err);
+    return res.status(500).json({ status: 'Error', error: err.message });
+  }
+};
+
+exports.leaveCurrentChat = async (req, res) => {
+  try {
+    const { chatId } = req.body;
+    const chat = await Chat.findOne({
+      where: {
+        id: chatId,
+      },
+      include: [
+        {
+          model: User,
+        },
+      ],
+    });
+
+    if (chat.Users.length === 2) {
+      return res.status(403).json({
+        status: 'Error',
+        message: "You cannot leave this chat when it's a 1 on 1 chat",
+      });
+    }
+
+    if (chat.Users.length === 3) {
+      chat.type = 'dual';
+      chat.save();
+    }
+
+    await ChatUser.destroy({
+      where: {
+        chatId,
+        userId: req.user.id,
+      },
+    });
+
+    await Message.destroy({
+      where: {
+        chatId,
+        fromUserId: req.user.id,
+      },
+    });
+
+    const notifyUsers = chat.Users.map((user) => user.id);
+
     return res.json({
-      status: 'Success',
-      message: 'Chat deleted successfully',
+      chatId: chat.id,
+      userId: req.user.id,
+      currentUserId: req.user.id,
+      notifyUsers,
     });
   } catch (err) {
-    console.log('err');
-    return res.json({ status: 'Error', error: err.message });
+    console.log('leaveCurrentChat() - err', err);
+    return res.status(500).json({ status: 'Error', error: err.message });
+  }
+};
+
+exports.deleteChat = async (req, res) => {
+  try {
+    const { chatId } = req.params;
+
+    const chat = await Chat.findOne({
+      where: {
+        id: chatId,
+      },
+      include: [{ model: User }],
+    });
+
+    const notifyUsers = chat.Users.map((user) => user.id);
+
+    await chat.destroy();
+
+    return res.json({ chatId, notifyUsers });
+  } catch (err) {
+    console.log('deleteChat() - err', err);
+    return res.status(500).json({ status: 'Error', error: err.message });
   }
 };

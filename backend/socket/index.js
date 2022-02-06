@@ -82,7 +82,6 @@ const SocketServer = (server) => {
         };
 
         const savedMessage = await Message.create(msg);
-        console.log('savedMessage', savedMessage);
 
         message.id = savedMessage.id;
         message.message = savedMessage.message;
@@ -106,6 +105,106 @@ const SocketServer = (server) => {
           const sockets = users.get(id).sockets;
           sockets.forEach((socket) => {
             io.to(socket).emit('typing', message);
+          });
+        }
+      });
+    });
+
+    socket.on('add-friend', (chats) => {
+      try {
+        let status = 'offline';
+        if (users.has(chats[1].Users[0].id)) {
+          status = 'online';
+          chats[0].Users[0].status = status;
+          users.get(chats[1].Users[0].id).sockets.forEach((socket) => {
+            io.to(socket).emit('new-chat', chats[0]);
+          });
+        }
+
+        if (users.has(chats[0].Users[0].id)) {
+          chats[1].Users[0].status = status;
+          users.get(chats[0].Users[0].id).sockets.forEach((socket) => {
+            io.to(socket).emit('new-chat', chats[1]);
+          });
+        }
+      } catch (err) {
+        console.log('add-freind - err', err);
+      }
+    });
+
+    socket.on('add-user-to-group', ({ chat, newChatter }) => {
+      try {
+        if (users.has(newChatter.id)) {
+          newChatter.status = 'online';
+        }
+
+        // To old users
+        chat.Users.forEach((user, index) => {
+          if (users.has(user.id)) {
+            chat.Users[index].status = 'online';
+
+            users.get(user.id).sockets.forEach((socket) => {
+              try {
+                io.to(socket).emit('added-user-to-group', {
+                  chat,
+                  chatters: [newChatter],
+                });
+              } catch (err) {
+                console.log('err', err);
+              }
+            });
+          }
+        });
+
+        // To new chatter
+        if (users.has(newChatter.id)) {
+          users.get(newChatter.id).sockets.forEach((socket) => {
+            try {
+              io.to(socket).emit('added-user-to-group', {
+                chat,
+                chatters: chat.Users,
+              });
+            } catch (err) {
+              console.log('err', err);
+            }
+          });
+        }
+      } catch (err) {
+        console.log('add-user-to-group - err', err);
+      }
+    });
+
+    socket.on('leave-current-chat', (data) => {
+      const { chatId, userId, currentUserId, notifyUsers } = data;
+      console.log('data', data);
+
+      notifyUsers.forEach((id) => {
+        if (users.has(id)) {
+          users.get(id).sockets.forEach((socket) => {
+            try {
+              io.to(socket).emit('remove-user-from-chat', {
+                chatId,
+                userId,
+                currentUserId,
+              });
+            } catch (err) {
+              console.log('leave-current-chat - err', err);
+            }
+          });
+        }
+      });
+    });
+
+    socket.on('delete-chat', (data) => {
+      const { chatId, notifyUsers } = data;
+      notifyUsers.forEach((id) => {
+        if (users.has(id)) {
+          users.get(id).sockets.forEach((socket) => {
+            try {
+              io.to(socket).emit('delete-chat', parseInt(chatId));
+            } catch (err) {
+              console.log('delete-chat - err', err);
+            }
           });
         }
       });

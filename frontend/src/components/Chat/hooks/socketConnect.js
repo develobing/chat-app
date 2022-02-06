@@ -8,6 +8,10 @@ import {
   setSocket,
   receivedMessage,
   senderTyping,
+  createChat,
+  addUserToGroup,
+  leaveCurrentChat,
+  deleteChat,
 } from '../../../store/actions/chat';
 
 function useSocket(user, dispatch) {
@@ -43,6 +47,27 @@ function useSocket(user, dispatch) {
         socket.on('received', (message) => {
           console.log('received', message);
           dispatch(receivedMessage(message, user.id));
+        });
+
+        socket.on('new-chat', (chat) => {
+          console.log('new-chat', chat);
+          dispatch(createChat(chat));
+        });
+
+        socket.on('added-user-to-group', (group) => {
+          console.log('group', group);
+          dispatch(addUserToGroup(group));
+        });
+
+        socket.on('remove-user-from-chat', (data) => {
+          console.log('remove-user-from-chat - data', data);
+          data.currentUserId = user.id;
+          dispatch(leaveCurrentChat(data));
+        });
+
+        socket.on('delete-chat', (chatId) => {
+          console.log('delete-chat', chatId);
+          dispatch(deleteChat(chatId));
         });
 
         console.log('res', res);

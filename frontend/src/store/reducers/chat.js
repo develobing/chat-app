@@ -9,6 +9,10 @@ import {
   SENDER_TYPING,
   PAGINATE_MESSAGES,
   INCREMENT_SCROLL,
+  CREATE_CHAT,
+  ADD_USER_TO_GROUP,
+  LEAVE_CURRENT_CHAT,
+  DELETE_CHAT,
 } from '../actions/chat';
 
 const initialState = {
@@ -229,6 +233,99 @@ const chatReducer = (state = initialState, action) => {
         ...state,
         scrollBottom: state.scrollBottom + 1,
         newMessage: { chatId: null, seen: true },
+      };
+    }
+
+    case CREATE_CHAT: {
+      return {
+        ...state,
+        chats: [...state.chats, ...[payload]],
+      };
+    }
+
+    case ADD_USER_TO_GROUP: {
+      const { chat, chatters } = payload;
+      let exists = false;
+
+      const chatsCopy = state.chats.map((chatState) => {
+        if (chat.id === chatState.id) {
+          exists = true;
+
+          return {
+            ...chatState,
+            type: 'group',
+            Users: [...chatState.Users, ...chatters],
+          };
+        }
+
+        return chatState;
+      });
+
+      if (!exists) chatsCopy.push(chat);
+
+      let currentChatCopy = { ...state.currentChat };
+
+      if (Object.keys(currentChatCopy).length > 0) {
+        if (chat.id === currentChatCopy.id) {
+          currentChatCopy = {
+            ...state.currentChat,
+            type: 'group',
+            Users: [...state.currentChat.Users, ...chatters],
+          };
+        }
+      }
+
+      return {
+        ...state,
+        chats: chatsCopy,
+        currentChat: currentChatCopy,
+      };
+    }
+
+    case LEAVE_CURRENT_CHAT: {
+      const { chatId, userId, currentUserId } = payload;
+
+      if (userId === currentUserId) {
+        const chatsCopy = state.chats.filter((chat) => chat.id !== chatId);
+
+        return {
+          ...state,
+          chats: chatsCopy,
+          currentChat: state.currentChat.id === chatId ? {} : state.currentChat,
+        };
+      } else {
+        const chatsCopy = state.chats.map((chat) => {
+          if (chatId === chat.id) {
+            return {
+              ...chat,
+              Users: chat.Users.filter((user) => user.id !== userId),
+            };
+          }
+
+          return chat;
+        });
+
+        let currentChatCopy = { ...state.currentChat };
+        if (currentChatCopy.id === chatId) {
+          currentChatCopy = {
+            ...currentChatCopy,
+            Users: currentChatCopy.Users.filter((user) => user.id !== userId),
+          };
+        }
+
+        return {
+          ...state,
+          chats: chatsCopy,
+          currentChat: currentChatCopy,
+        };
+      }
+    }
+
+    case DELETE_CHAT: {
+      return {
+        ...state,
+        chats: state.chats.filter((chat) => chat.id !== payload),
+        currentChat: state.currentChat.id === payload ? {} : state.currentChat,
       };
     }
 
